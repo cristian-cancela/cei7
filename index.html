@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana de la Educación Especial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box;}
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8dff5 100%);
+            padding: 20px; overflow: hidden;
+        }
+
+        .container {
+            width: 100%; max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden; position: relative; height: 90vh;
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 1100px; height: 85vh; }
+        }
+
+        .page {
+            width: 100%; height: 100%; display: none;
+            flex-direction: column; padding: 30px 25px;
+            background: linear-gradient(180deg, #fffbf5 0%, #f5f0ff 100%);
+            position: relative; overflow-y: auto; overflow-x: hidden;
+        }
+
+        .page::-webkit-scrollbar {width: 8px;}
+        .page::-webkit-scrollbar-thumb {background: rgba(167,139,250,0.3); border-radius: 10px;}
+        .page::-webkit-scrollbar-thumb:hover {background: rgba(167,139,250,0.5);}
+        .page.active {display: flex;}
+
+        @media (min-width: 768px) {
+            .page {padding: 50px 60px;}
+        }
+
+        .decorative-blob {
+            position: absolute; border-radius: 50%;
+            opacity: 0.15; filter: blur(40px);
+            pointer-events: none;
+        }
+
+        .blob1 {width: 200px; height: 200px; background: #d4a5f5; top: -50px; right: -50px;}
+        .blob2 {width: 150px; height: 150px; background: #ffd4e5; bottom: -30px; left: -30px;}
+        .blob3 {width: 180px; height: 180px; background: #ffe4c4; top: 40%; left: -60px;}
+
+        .content {position: relative; z-index: 1; flex: 1;}
+
+        h1 {
+            font-size: 1.8em; font-weight: 700; color: #7c3aed;
+            text-align: center; margin-bottom: 15px; line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {h1 {font-size: 3em; margin-bottom: 25px;}}
+
+        h2 {
+            font-size: 1.5em; font-weight: 600; color: #9333ea;
+            text-align: center; margin-bottom: 25px;
+        }
+
+        @media (min-width: 768px) {h2 {font-size: 2.2em; margin-bottom: 35px;}}
+
+        .subtitle {
+            font-size: 1em; color: #6b7280; text-align: center;
+            margin-bottom: 20px; font-weight: 300;
+        }
+
+        @media (min-width: 768px) {.subtitle {font-size: 1.2em; margin-bottom: 30px;}}
+
+        .project-detail {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px; padding: 25px; margin-bottom: 20px;
+            border: 2px solid rgba(167, 139, 250, 0.2);
+        }
+
+        .project-detail h3 {color: #7c3aed; font-size: 1.2em; margin-bottom: 15px;}
+        .project-detail p {color: #4b5563; line-height: 1.7; margin-bottom: 12px;}
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+
+        .project-photo {
+            width: 100%; height: 250px; object-fit: cover;
+            border-radius: 15px; border: 3px solid #c4b5fd;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-photo:hover {
+            transform: scale(1.01);
+            box-shadow: 0 6px 20px rgba(167,139,250,0.4);
+        }
+
+        .navigation {position: relative; z-index: 1; margin-top: 20px;}
+
+        .projects-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 8px; margin-bottom: 15px;
+        }
+
+        @media (min-width: 768px) {.projects-grid {grid-template-columns: repeat(5, 1fr); gap: 12px;}}
+
+        .btn {
+            padding: 10px 15px; border: none; border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85em; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; text-align: center;
+        }
+
+        @media (min-width: 768px) {.btn {padding: 12px 20px; font-size: 0.9em;}}
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: white;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Modal para ver imagen completa */
+        .modal {
+            display: none; position: fixed; z-index: 10;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+        }
+
+        .modal.active {display: flex;}
+        .modal img {
+            max-width: 90%; max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(255,255,255,0.2);
+        }
+
+        .close-btn {
+            position: absolute; top: 20px; right: 30px;
+            font-size: 2em; color: white; cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%; padding: 5px 15px;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {background: rgba(255,255,255,0.3);}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Página 1: Portada -->
+        <div class="page active" id="page1">
+            <div class="decorative-blob blob1"></div>
+            <div class="decorative-blob blob2"></div>
+            <div class="decorative-blob blob3"></div>
+            
+            <div class="content">
+                <h1>Semana de la Educación Especial</h1>
+                <p class="subtitle" style="color: #9333ea; font-weight: 500;">CEI 7</p>
+                <p class="subtitle" style="font-style: italic; color: #ec4899;">"Jugar jugando, aprender en juego"</p>
+                <div class="navigation">
+                    <div class="projects-grid" id="schoolButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para imagen ampliada -->
+    <div class="modal" id="imageModal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <img id="modalImage" src="" alt="Imagen ampliada">
+    </div>
+
+    <script>
+        // CONFIGURA AQUÍ: Lista de escuelas y cantidad de fotos que tiene cada una
+        const schoolsData = [
+            { name: "JIN C ESCUELA 12", numPhotos: 3 },
+            { name: "JII Nº 6", numPhotos: 1 },
+            { name: "ESCUELA 4 TM y TT", numPhotos: 12 },
+            { name: "ESCUELA 9 TM", numPhotos: 3 },
+            { name: "ESCUELA 10 TM", numPhotos: 4 },
+            { name: "ESCUELA 12 TM y TT", numPhotos: 3 },
+            { name: "ESCUELA 13 TM y TT", numPhotos: 5 },
+            { name: "ESCUELA 14 TM", numPhotos: 6 },
+            { name: "ESCUELA 15", numPhotos: 3 },
+            { name: "ESCUELA 16 TM", numPhotos: 4 },
+            { name: "ESCUELA 19 TM", numPhotos: 2 },
+            { name: "ESCUELA 24", numPhotos: 2 },
+            { name: "ESCUELA 25 TM", numPhotos: 5 },
+            { name: "ESCUELA 1 TM", numPhotos: 2 },
+            { name: "ESCUELA 2 TM y TT", numPhotos: 3 },
+            { name: "ESCUELA 3 TM y TT", numPhotos: 4 },
+            { name: "ESCUELA 5", numPhotos: 4 },
+            { name: "ESCUELA 6 TM", numPhotos: 2 },
+            { name: "ESCUELA 8 TM y TT", numPhotos: 7 },
+            { name: "ESCUELA 17 TM", numPhotos: 2 },
+            { name: "ESCUELA 20 TM y TT", numPhotos: 10 },
+            { name: "ESCUELA 21 TM y TT", numPhotos: 7 },
+            { name: "ESCUELA 22 TM y TT", numPhotos: 6 },
+            { name: "ESCUELA 23 TM", numPhotos: 1 },
+            { name: "JII Nº1", numPhotos: 5 },
+            { name: "JII A", numPhotos: 5 },
+        ];
+
+        // CONFIGURA AQUÍ: Los textos de cada escuela (opcional, si quieres personalizarlos)
+        const schoolTexts = {
+            "JIN C ESCUELA 12": {
+    intro: "El proyecto, coordinado por la docente Daniela Zuvanich, se centró en el trabajo con el respeto por la diversidad cultural, promoviendo el reconocimiento y la valoración de las distintas identidades que conviven en nuestra comunidad educativa. A partir de la visualización de un video sobre el significado de los colores de la bandera wiphala, se generaron espacios de diálogo y reflexión donde los niños compartieron ideas sobre las culturas originarias y sus símbolos.",
+    final: "Como cierre del proyecto, las docentes acompañaron a los niños en la realización de una producción colectiva: el armado de una gran bandera wiphala. Cada niño pintó los cuadros que la componen, integrando los colores y significados aprendidos. La actividad permitió fortalecer el trabajo en equipo, la expresión artística y el compromiso con los valores de respeto, inclusión y diversidad cultural."
+},
+"JII Nº 6": {
+    intro: "El proyecto, coordinado por la docente María de los Ángeles Monte, se desarrolló en la sala de 5 con el propósito de reflexionar sobre el valor del respeto, la tolerancia y la aceptación de las diferencias. A partir del cuento 'Monstruo Rosa' (presentado en formato de video), los niños participaron de un intercambio grupal donde se abordaron preguntas sencillas que invitaron a pensar en la importancia de quererse a uno mismo y respetar a los demás. Se destacaron las características del personaje principal, reconociendo aquello que lo hace único y diferente, al igual que cada uno de nosotros.",
+    final: "Como producto final, se acompañó a los niños en la confección de un afiche colectivo. En él, cada alumno y alumna se representó a sí mismo, plasmando lo trabajado durante la actividad. Esta propuesta permitió fortalecer la autoestima, la expresión personal y el reconocimiento de la diversidad como un valor positivo dentro del grupo."
+},
+"ESCUELA 4 TM y TT": {
+    intro: "El proyecto, llevado adelante por las docentes Elizabeth Bibiana Álvarez, Ananda Elgueta Ramírez, Cristina Brandán y Fabiana Mazza, abordó diferentes propuestas en los distintos grados con el propósito de reflexionar sobre la diversidad, la empatía, el respeto y el reconocimiento de las propias habilidades. En tercer grado, bajo la coordinación de la docente Ananda Elgueta Ramírez, los alumnos realizaron un test de estilos de aprendizaje (visual, auditivo, kinestésico o mixto) y respondieron preguntas que los invitaron a reconocer sus talentos, aquello que pueden compartir con los demás y lo que necesitan de otros. A partir de estas reflexiones se buscó fortalecer el conocimiento de sí mismos y del grupo, promoviendo la valoración de la diversidad y el enriquecimiento mutuo.",
+    final: "Luego de compartir sus respuestas y reflexionar sobre las conclusiones alcanzadas, los alumnos de tercer grado plasmaron el trabajo en un afiche colectivo. En cuarto grado, la docente Cristina Brandán propuso el 'Juego de las esquinas' (nunca, siempre, a veces, casi nunca) con el objetivo de reflexionar sobre aquello que nos hace parecidos y nos une como grupo. En primer grado, la docente Fabiana Mazza acompañó la realización de lobos con plastilina, donde los niños escribieron algunas características propias de su creación. En sexto grado, se trabajó con el tangram, creando figuras geométricas en parejas (casas, barcos, teteras, velas, entre otras) fomentando la cooperación y la creatividad. Finalmente, en séptimo grado se desarrolló la actividad 'Leer con las manos', orientada a promover el respeto a la diversidad y la accesibilidad. A través de una experiencia sensorial, los alumnos reflexionaron sobre la inclusión de personas con discapacidad visual, culminando con la escritura de palabras en sistema braille como producción final."
+},
+"ESCUELA 9 TM": {
+    intro: "En primer grado, la docente Soledad Aguirre propuso una actividad basada en los cuentos que los alumnos están leyendo sobre lobos. Cada estudiante dibujó un lobo y, a partir de este, identificó y escribió las distintas partes del cuerpo del animal. La propuesta buscó integrar la lectura, la comprensión y la expresión escrita, fomentando la atención a los detalles y la conexión entre narrativa y representación gráfica.",
+    final: "Como producto final, los alumnos elaboraron sus dibujos acompañados de las descripciones de las partes del lobo, promoviendo la creatividad, la observación y la capacidad de relacionar conceptos aprendidos con la práctica. La actividad también favoreció la reflexión sobre la estructura y los elementos de los cuentos leídos."
+},
+"ESCUELA 10 TM": {
+    intro: "En primer grado, la docente Rita Mattolini propuso la escucha del cuento 'Diferente' de Katryn Cave y Chris Riddel. La actividad estuvo orientada a reflexionar sobre la importancia de respetar, aceptar y valorar las diferencias, y cómo compartirlas con los demás nos enriquece como grupo. Se buscó generar un espacio de diálogo y conciencia sobre la diversidad y la unicidad de cada persona.",
+    final: "Como producto final, los alumnos realizaron una producción colectiva bajo la consigna 'Todos somos diferentes y hay algo que nos hace únicos', plasmando sus ideas mediante dibujos, collages y palabras o frases que reflejaran aquello que los hace especiales. Todas las producciones se compartieron y se organizaron en un afiche grupal, promoviendo la valoración de la diversidad y la expresión individual dentro del grupo."
+},
+"ESCUELA 12 TM y TT": {
+    intro: "Durante la semana, en los turnos mañana y tarde, la docente Ivana Ibarra propuso actividades orientadas a reflexionar sobre la diversidad, la cooperación y el valor de cada integrante dentro del grupo. En el primer ciclo, los alumnos visualizaron el cuento 'Por cuatro esquinitas de nada', realizando juegos corporales con el armado de figuras que fomentaron la participación de todos y la comprensión de las diferencias que nos enriquecen. En el segundo ciclo, se llevaron a cabo juegos cooperativos como 'La línea', 'Trasladar el globo' y 'Armar una figura', orientados a fortalecer la comunicación, el trabajo en equipo y la valoración del aporte individual dentro de la grupalidad.",
+    final: "Como producto final, se realizaron collages y producciones colectivas que integraron las experiencias de ambos ciclos, promoviendo la reflexión sobre la diversidad, la inclusión, la colaboración y la importancia de cada persona dentro del grupo."
+},
+"ESCUELA 13 TM y TT": {
+    
+    intro: "Durante la semana de la educación especial, en los turnos mañana y tarde, las docentes Marianela Nieto y Romina Fernández Ruffolo propusieron un trabajo colaborativo basado en la lectura y reflexión. Se leyó el relato 'Tiempo de Mariposa' y se conversó sobre sus enseñanzas, fomentando la comprensión de la diversidad y la valoración del aporte de cada integrante del grupo.",
+    final: "Con la colaboración de algunos representantes por grado, los alumnos armaron un rompecabezas colectivo acompañado de una frase alusiva: 'Las cosas no siempre suceden cuando queremos, sino en el momento que tienen que suceder'. Las producciones se expusieron en una cartelera junto con frases surgidas a partir de la reflexión sobre el cuento, promoviendo la cooperación, la creatividad y el trabajo en equipo."
+},
+"ESCUELA 14 TM": {
+    intro: "En segundo grado A, las docentes Rocio Cristín y Jexibel Aponte propusieron una actividad de lectura compartida a través del cuento 'Un lobo llamado Cereal'. La propuesta buscó que los alumnos reflexionaran sobre las diferencias, gustos y elecciones personales, favoreciendo el intercambio oral y la expresión de ideas propias dentro del grupo.",
+    final: "Posteriormente, se realizó un taller de origami en el que cada niño creó un lobito en papel y le añadió cualidades únicas para personalizar su creación. Como producto final, se elaboró un collage en papel afiche que integró todas las producciones del grupo, promoviendo la creatividad, la cooperación y la valoración de la diversidad individual."
+},
+"ESCUELA 15": {
+    intro: "Durante la semana de la educación especial, la docente Romina Fernández Ruffolo propuso en primer ciclo el armado de una frase colaborativa. Cada alumno decoró una pieza de la frase 'Somos diferentes pero juntos podemos hacer grandes cosas', integrando su creatividad y percepción individual.",
+    final: "En una jornada posterior, durante la ronda del saludo inicial de toda la escuela, se conversó sobre la actividad y se armó la frase completa con la colaboración de representantes de cada grado. El resultado se expuso en una cartelera, promoviendo la cooperación, la expresión individual y la valoración de la diversidad en el grupo."
+},
+"ESCUELA 16 TM": {
+    intro: "En segundo grado, la docente Carla Nelli retomó la secuencia de seguimiento al autor Liliana Cinetto, trabajando con el libro previamente leído 'La mejor foto'. Cada alumno escribió su nombre en una hoja y, en otra, un pequeño relato describiéndose brevemente, incluyendo gustos, habilidades y aspectos personales que consideren importantes. Esta actividad fomentó la autoexploración y el reconocimiento de la identidad individual.",
+    final: "Posteriormente, se mezclaron los papeles y cada niño leyó la descripción de otro compañero, mientras el grupo debía adivinar de quién se trataba. Luego, cada descripción se pegó junto al nombre correspondiente. Finalmente, se realizó una reflexión grupal sobre la igualdad y la diversidad, promoviendo la comprensión de que todos somos diferentes pero con igual valor dentro del grupo."
+},
+"ESCUELA 19 TM": {
+    intro: "En primero y segundo grado, la docente Rita Mattolini propuso la lectura del cuento 'El libro negro de colores' de Menena Cottin y Rosana Faría. La actividad invitó a los alumnos a reflexionar sobre las diferencias desde lo sensorial, poniéndose en el lugar de Tomás, un personaje que no ve los colores pero puede sentirlos e imaginarlos. La propuesta buscó desarrollar la empatía y la comprensión de la diversidad a través de la experiencia sensorial.",
+    final: "Como producto final, cada alumno eligió cuál era para él o ella 'el rey de los colores' y expresó sus sensaciones mediante un dibujo, collage o frase describiendo cómo se sentía ese color, a qué sabía, cómo se oía y a qué olía. Todas las producciones se pegaron en un afiche colectivo, integrando las experiencias individuales en una obra grupal que resaltó la diversidad sensorial y la creatividad."
+},
+"ESCUELA 24": {
+    
+    intro: "En quinto grado, los alumnos trabajaron en un proyecto conjunto para crear una versión inclusiva de un cuento producido por ellos mismos. A partir de sus propias descripciones, utilizaron herramientas de inteligencia artificial para generar imágenes, incorporaron texto en Braille y añadieron efectos de sonido creados con IA que representaban las escenas y emociones del relato. Durante el proceso, los grupos investigaron cómo leen las personas con discapacidad visual y cómo los sonidos pueden transmitir sensaciones y atmósferas.",
+    final: "Como producto final, se presentó un cuento accesible en formato digital acompañado de un mural táctil, combinando imágenes generadas por IA, Braille artesanal y paisajes sonoros inclusivos mediante un código QR que permite escuchar los sonidos ambientales. Esta producción se expondrá en la muestra de fin de año de la escuela, destacando la creatividad, la inclusión y la accesibilidad."
+},
+"ESCUELA 25 TM": {
+    docente: "Mariana Di Ranni",
+    intro: "En primer grado, la docente Mariana Di Ranni propuso un juego inclusivo de carácter lúdico-pedagógico, teniendo en cuenta el trabajo que los alumnos realizan en Matemática y considerando las distintas y singulares posibilidades de cada uno. La actividad permitió la participación de todos, abordando desde el reconocimiento, asociación y relación número-cantidad de una cifra hasta la composición de números de dos cifras como suma de un número redondo más un dígito (decenas y unidades).",
+    final: "El juego promovió la comprensión de los conceptos numéricos de manera inclusiva, favoreciendo la participación equitativa, la colaboración entre compañeros y el desarrollo de habilidades matemáticas adaptadas a las necesidades individuales de los estudiantes."
+},
+"ESCUELA 1 TM": {
+    intro: "En la Escuela 1, las docentes Jacqueline Pelus y Andrea Borenszweig propusieron una actividad basada en la consigna '¿Qué te gustaría aprender?'. Los alumnos escribieron sus respuestas en un papel, y en el caso de los estudiantes de quinto grado, la consigna se formuló como '¿Qué sé y qué te gustaría aprender?'. La propuesta buscó promover la reflexión sobre los intereses individuales y la valoración de las ideas de los demás, fomentando la expresión personal y el intercambio dentro del grupo.",
+    final: "Todas las respuestas se recopilaron en una cartelera ubicada en el hall de entrada de la escuela, visibilizando los intereses de cada estudiante y creando un espacio colectivo de reconocimiento y motivación hacia el aprendizaje."
+},
+"ESCUELA 2 TM y TT": {
+    intro: "En la Escuela 2, las docentes Elizabeth Bibiana Alvarez y Ananda Elgueta Ramírez en turno mañana, y Natalia Luchetti junto a Rocío Cristín en turno tarde, propusieron diversas actividades orientadas a la reflexión sobre la diversidad y el reconocimiento de las diferencias individuales. En sexto grado se replicó la actividad realizada previamente con tercer grado de la Escuela 4, adaptando el material a la edad y necesidades del grupo. Además, en primer y cuarto grado se trabajó con el 'Juego de las esquinas' (nunca, siempre, a veces, casi nunca), fomentando la reflexión sobre lo que nos hace parecidos y nos une. En cuarto y quinto grado se leyó el cuento 'Orejas de mariposa' de Luisa Aguilar y André Neves, entregando a cada niño la silueta de una mariposa para que escribieran lo que los hace únicos y decoraran sus alas con colores y símbolos representativos.",
+    final: "Todas las producciones individuales se integraron en una cartelera colectiva donde las alas formaron una gran mariposa volando alrededor de una frase central, como 'Nuestras diferencias nos hacen sentir libres como mariposas'. La actividad permitió a los alumnos expresar su singularidad, reconocer las diferencias de sus compañeros y comprender cómo la diversidad enriquece al grupo."
+},
+"ESCUELA 3 TM y TT": {
+    intro: "En la Escuela 3, las docentes Cecilia Díaz y Celia Báez en turno mañana, y Natalia Luchetti junto a Rocío Cristín en turno tarde, propusieron actividades orientadas a la inclusión y al reconocimiento de la diversidad. En primer grado, se trabajó con la actividad 'Las palabras que nos incluyen', reflexionando sobre las palabras que pueden acercarnos, cuidar y hacer bien, como invitaciones a jugar o ayudas a los demás, plasmando los conceptos en un mural colectivo con palabras y dibujos. En tercer y cuarto grado, los niños participaron del taller con las maestras de apoyo, leyendo el cuento 'Orejas de mariposa' de Luisa Aguilar y André Neves, recibiendo una silueta de mariposa para escribir lo que los hace únicos y decorando sus alas con colores y símbolos representativos.",
+    final: "Las producciones individuales se integraron en una cartelera colectiva, donde las alas formaron una gran mariposa volando alrededor de una frase central como 'Nuestras diferencias nos hace sentir libres como mariposas', promoviendo la valoración de la diversidad y la expresión personal de cada estudiante."
+},
+"ESCUELA 5": {
+    intro: "En la Escuela 5, la docente Lucía Quevedo propuso una actividad junto a los alumnos de 3° grado a partir de la lectura del cuento 'Yo voy conmigo' de Raquel Díaz Reguera. A través de la historia, se invitó a los niños y niñas a reflexionar sobre sus características, gustos y detalles que los hacen ser quienes son, reconociendo aquello que los define y los acompaña en su identidad.",
+    final: "Como cierre, cada estudiante se dibujó representando esas particularidades personales, creando un retrato lleno de símbolos que los identifican. Los dibujos se reunieron en un afiche colectivo, conformando un mural que celebra la diversidad y la autenticidad de cada integrante del grupo."
+},
+"ESCUELA 6 TM": {
+    intro: "En la Escuela 6, la docente Agustina Rivas trabajó con los grupos de 1° y 3° grado a partir de la lectura del libro 'Palabras semillas' de Magela Demarco y Cali Grossi. A través del cuento, los niños y niñas reflexionaron sobre el poder de las palabras y cómo estas pueden generar bienestar o daño en los demás.",
+    final: "Como producto de la actividad, se elaboró un afiche colectivo donde los estudiantes escribieron las palabras que les gusta escuchar y aquellas que pueden lastimar, promoviendo la empatía, el respeto y el buen trato en la convivencia escolar."
+},
+"ESCUELA 8 TM y TT": {
+    intro: "En la Escuela 8, las docentes Lucía Quevedo, Mariana Di Ranni y Cristina Brandán propusieron distintas actividades en el marco de la Semana de la Educación Especial, con el propósito de fomentar la inclusión y la participación a través del juego y la creatividad. En 4° grado, Lucía Quevedo presentó la propuesta 'Jugar multiplicando', que incluyó tres juegos ('La tapadita', 'El gato' y 'Guerra de multiplicaciones') para abordar diferentes niveles de conocimiento sobre la multiplicación. Mariana Di Ranni, con los grupos de 1° grado, desarrolló un juego inclusivo lúdico-pedagógico que permitió la participación de todos los estudiantes, desde el reconocimiento y asociación número-cantidad hasta la composición de números de dos cifras mediante sumas de números redondos y dígitos. Por su parte, Cristina Brandán trabajó con los alumnos de 1° grado en actividades con masa, donde cada estudiante creó su propio lobo y elaboró una lista de palabras con las partes del cuerpo. En una segunda propuesta, confeccionaron animales utilizando figuras geométricas y escribieron qué animal habían creado.",
+    final: "Como cierre, se realizaron afiches colectivos con las producciones y consignas de cada actividad, destacando la importancia del trabajo colaborativo, la inclusión y la expresión individual a través del juego y la creatividad."
+},
+"ESCUELA 17 TM": {
+    intro: "En la Escuela 17, las docentes Andrea Borenszweig y Mirta Gómez propusieron una actividad para los estudiantes de 3° grado orientada a reflexionar sobre la diversidad y la creatividad a partir de un mismo punto de partida. Los niños completaron dibujos a partir de imágenes abiertas que actuaron como disparadores, explorando diferentes maneras de interpretar y representar una misma idea.",
+    final: "Como cierre, se confeccionó un afiche grupal con todas las producciones y se reflexionó sobre la diversidad en las interpretaciones y expresiones artísticas, valorando la singularidad de cada aporte dentro del grupo."
+},
+"ESCUELA 20 TM y TT": {
+    intro: "En la Escuela 20, las docentes Romina Daza y Silvia Kovtun propusieron diversas actividades que promueven la colaboración y la construcción de material didáctico inclusivo. En primer grado, los estudiantes elaboraron un material para trabajar la correspondencia color–cantidad: pintaron peces de diferentes colores y decoraron dados con esos mismos tonos, de modo que cada color de pez correspondiera a una cara del dado. En un encuentro posterior, realizaron una actividad práctica con imágenes de pingüinos, cañas de pescar y pizarras, pescando y registrando la cantidad de peces que indicaba el dado. Por su parte, las docentes Carmen Cortiñas y Noelia Medina desarrollaron la propuesta 'Juego colaborativo', destinada a 6° y 7° grado, donde los equipos debían armar estrategias conjuntas para enfrentar distintos desafíos. En primer ciclo, se organizaron postas con juegos reglados como cartas, oca y dados, para 1°, 2° y 3° grado.",
+    final: "Las actividades permitieron fortalecer la cooperación, la integración y el aprendizaje a través del juego, promoviendo el respeto por las diferencias y la participación de todos los alumnos en un entorno lúdico y creativo."
+},
+"ESCUELA 21 TM y TT": {
+    intro: "En la Escuela 21, la docente Ayelén Guinzio, junto a los equipos de ambos turnos, propuso actividades centradas en la identidad, la cooperación y el valor de las diferencias. En 2° y 3° grado, cada niño y niña recibió una pieza grande de rompecabezas en cartulina para dibujar o pegar elementos que los representaran —gustos, colores, palabras, objetos, texturas o imágenes— que hablaran de quiénes son. Luego, entre todos, unieron las piezas formando un gran rompecabezas colectivo, reflexionando sobre cómo, siendo distintos, pueden construir juntos una escuela donde cada uno tiene su lugar. En el turno tarde, con 3° grado B, se realizaron dos juegos: 'Veredas', para conocer similitudes y diferencias entre compañeros, y 'El puente', un juego cooperativo que promovió la empatía, la solidaridad y los vínculos entre pares.",
+    final: "Como cierre, se elaboraron dos productos colectivos: un mural con las piezas del rompecabezas acompañado de la frase 'Ser distintos nos une' y un afiche que plasmó las reflexiones surgidas en los juegos, resaltando la importancia de construir juntos desde la diversidad."
+},
+"ESCUELA 22 TM y TT": {
+    intro: "En la Escuela 22, la docente Cecilia Pommies en turno mañana y la docente Fabiana Mazza en turno tarde desarrollaron actividades centradas en la valoración de las diferencias y las fortalezas personales. En el turno mañana, a partir del cuento 'Por cuatro esquinitas de nada', se conversó sobre por qué somos diferentes y la importancia de aceptar y valorar esas diferencias. Luego, los alumnos y alumnas elaboraron un afiche colectivo reflejando las ideas surgidas de la reflexión. En el turno tarde, bajo la consigna 'Superpoderes que nos hacen únicos', se propuso una actividad basada en un cuento que invitó a reconocer las diferencias como riquezas, identificando fortalezas y capacidades personales.",
+    final: "Como producto final, cada estudiante representó su 'superpoder' mediante un gráfico que destacó una fortaleza o capacidad individual. Las producciones se reunieron en una exposición colectiva, celebrando la diversidad y el valor de lo que cada uno aporta al grupo."
+},
+"ESCUELA 23 TM": {
+    intro: "En la Escuela 23, las docentes Cecilia, Daniela y Micaela trabajaron con los alumnos de 3° y 4° grado la lectura del cuento 'Tú importas' de Christian Robinson, con el propósito de reflexionar sobre el valor personal y el reconocimiento de los demás. La propuesta invitó a los estudiantes a pensar en la importancia que cada uno tiene dentro del grupo y en la sociedad.",
+    final: "Como producción final, los alumnos escribieron un mensaje bajo la consigna 'Yo importo…', acompañándolo con un dibujo o collage sobre sí mismos. Todas las producciones se reunieron en un afiche colectivo que destacó la identidad, la autoestima y la valoración de cada integrante del grupo."
+},
+"JII Nº1": {
+    intro: "En JII Nº1, la docente Daniela Villanueva trabajó con los alumnos el cuento 'Por cuatro esquinitas de nada' en formato papel o video, promoviendo la reflexión e intercambio sobre la diversidad, los sentimientos y la resolución de situaciones de la vida cotidiana.",
+    final: "Como producto final, los alumnos realizaron un afiche en el que presentaron la casa y la puerta 'original', modificándolas según su creatividad. Además, intervinieron distintas figuras geométricas con lápices, crayones y acuarelas, que finalmente fueron pegadas en el afiche, integrando así todas las producciones en un trabajo colectivo."
+},
+"JII A": {
+    intro: "En JII A, la docente Daniela Villanueva trabajó con los alumnos el cuento 'Por cuatro esquinitas de nada' en formato papel o video, promoviendo la reflexión e intercambio sobre diversidad, sentimientos y la resolución de situaciones de la vida cotidiana.",
+    final: "Como producto final, los alumnos realizaron un afiche en el que presentaron la casa y la puerta 'original', modificándolas según su creatividad. Además, intervinieron distintas figuras geométricas con lápices, crayones y acuarelas, que finalmente fueron pegadas en el afiche, integrando así todas las producciones en un trabajo colectivo."
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // Puedes agregar más escuelas personalizadas aquí
+            // Si no agregas una escuela, usará el texto por defecto
+        };
+
+        function createSchoolButtons() {
+            const container = document.getElementById('schoolButtons');
+            schoolsData.forEach((schoolData, index) => {
+                const button = document.createElement('button');
+                button.className = 'btn btn-primary';
+                button.textContent = schoolData.name;
+                button.onclick = () => goToPage(index + 2);
+                container.appendChild(button);
+            });
+        }
+
+        function createSchoolPages() {
+            const container = document.querySelector('.container');
+            schoolsData.forEach((schoolData, index) => {
+                const pageNum = index + 2;
+                const schoolName = schoolData.name;
+                const numPhotos = schoolData.numPhotos;
+                
+                // Obtener textos personalizados o usar por defecto
+                const texts = schoolTexts[schoolName] || {
+                    intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción sobre las actividades y objetivos que desarrollaron los alumnos durante la Semana de la Educación Especial.`,
+                    final: `Texto final o conclusiones del proyecto ${schoolName}. Aquí se puede incluir el resultado final o un resumen de lo trabajado con los estudiantes.`
+                };
+                
+                // Generar HTML para las fotos dinámicamente según numPhotos
+                let photosHTML = '';
+                for (let i = 1; i <= numPhotos; i++) {
+                    // Si es la primera foto, usa el nombre sin número, las demás llevan número
+                    const photoPath = i === 1 
+                        ? `images/${schoolName}.jpg`
+                        : `images/${schoolName}${i}.jpg`;
+                    
+                    photosHTML += `<img src="${photoPath}" alt="Foto ${i} de ${schoolName}" class="project-photo" onclick="openModal('${photoPath}')" onerror="this.style.display='none'">`;
+                }
+
+                const pageHTML = `
+                    <div class="page" id="page${pageNum}">
+                        <div class="decorative-blob blob1"></div>
+                        <div class="decorative-blob blob2"></div>
+                        <div class="content">
+                            <h2>${schoolName}</h2>
+                            <div class="project-detail">
+                                <h3>Introducción del Proyecto</h3>
+                                <p>${texts.intro}</p>
+                            </div>
+                            <div class="project-detail">
+                                <h3>Fotos del Proyecto</h3>
+                                <div class="photos-grid">
+                                    ${photosHTML}
+                                </div>
+                            </div>
+                            <div class="project-detail">
+                                <h3>Producción Final</h3>
+                                <p>${texts.final}</p>
+                            </div>
+                        </div>
+                        <div class="navigation">
+                            <button class="btn btn-back" onclick="goToPage(1)">← Volver al inicio</button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', pageHTML);
+            });
+        }
+
+        function goToPage(pageNumber) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const target = document.getElementById('page' + pageNumber);
+            if (target) { target.classList.add('active'); target.scrollTop = 0; }
+        }
+
+        function openModal(src) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Inicialización
+        createSchoolButtons();
+        createSchoolPages();
+    </script>
+</body>
+</html>
