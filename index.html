@@ -335,28 +335,6 @@
     intro: "En JII A, la docente Daniela Villanueva trabajó con los alumnos el cuento 'Por cuatro esquinitas de nada' en formato papel o video, promoviendo la reflexión e intercambio sobre diversidad, sentimientos y la resolución de situaciones de la vida cotidiana.",
     final: "Como producto final, los alumnos realizaron un afiche en el que presentaron la casa y la puerta 'original', modificándolas según su creatividad. Además, intervinieron distintas figuras geométricas con lápices, crayones y acuarelas, que finalmente fueron pegadas en el afiche, integrando así todas las producciones en un trabajo colectivo."
 },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // Puedes agregar más escuelas personalizadas aquí
             // Si no agregas una escuela, usará el texto por defecto
         };
@@ -373,28 +351,26 @@
         }
 
         function createSchoolPages() {
-            const container = document.querySelector('.container');
-            schoolsData.forEach((schoolData, index) => {
-                const pageNum = index + 2;
-                const schoolName = schoolData.name;
-                const numPhotos = schoolData.numPhotos;
-                
-                // Obtener textos personalizados o usar por defecto
-                const texts = schoolTexts[schoolName] || {
-                    intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción sobre las actividades y objetivos que desarrollaron los alumnos durante la Semana de la Educación Especial.`,
-                    final: `Texto final o conclusiones del proyecto ${schoolName}. Aquí se puede incluir el resultado final o un resumen de lo trabajado con los estudiantes.`
-                };
-                
-                // Generar HTML para las fotos dinámicamente según numPhotos
-                let photosHTML = '';
-                for (let i = 1; i <= numPhotos; i++) {
-                    // Si es la primera foto, usa el nombre sin número, las demás llevan número
-                    const photoPath = i === 1 
-                        ? `images/${schoolName}.jpg`
-                        : `images/${schoolName}${i}.jpg`;
-                    
-                    photosHTML += `<img src="${photoPath}" alt="Foto ${i} de ${schoolName}" class="project-photo" onclick="openModal('${photoPath}')" onerror="this.style.display='none'">`;
-                }
+    const container = document.querySelector('.container');
+    schoolsData.forEach((schoolData, index) => {
+        const pageNum = index + 2;
+        const schoolName = schoolData.name;
+        const numPhotos = schoolData.numPhotos;
+        
+        const texts = schoolTexts[schoolName] || {
+            intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción sobre las actividades y objetivos que desarrollaron los alumnos durante la Semana de la Educación Especial.`,
+            final: `Texto final o conclusiones del proyecto ${schoolName}. Aquí se puede incluir el resultado final o un resumen de lo trabajado con los estudiantes.`
+        };
+        
+        // AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
+        let photosHTML = '';
+        for (let i = 1; i <= numPhotos; i++) {
+            const photoPath = i === 1 
+                ? `images/${schoolName.replace(/ /g, '_')}.jpg`
+                : `images/${schoolName.replace(/ /g, '_')}${i}.jpg`;
+            
+            photosHTML += `<img src="${photoPath}" alt="Foto ${i} de ${schoolName}" class="project-photo" onclick="openModal('${photoPath}')" onerror="this.style.display='none'">`;
+        }
 
                 const pageHTML = `
                     <div class="page" id="page${pageNum}">
@@ -445,10 +421,13 @@
         document.getElementById('imageModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
+       
+
 
         // Inicialización
         createSchoolButtons();
         createSchoolPages();
+        
     </script>
 </body>
 </html>
