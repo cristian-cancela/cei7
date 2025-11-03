@@ -321,6 +321,20 @@
       .close-btn:hover {
         background: rgba(190, 39, 39, 0.925);
       }
+      button.cei7-button {
+        background-color: #ff7eb9; /* rosa pastel */
+        color: white;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button.cei7-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+        background-color: #ff63a5;
+      }
     </style>
   </head>
   <body>
@@ -359,6 +373,7 @@
     <script>
       // CONFIGURA AQUÍ: Lista de escuelas y cantidad de fotos que tiene cada una
       const schoolsData = [
+        { name: "CEI 7", numPhotos: 6 },
         { name: "JIN C ESCUELA 12", numPhotos: 3 },
         { name: "JII Nº 6", numPhotos: 1 },
         { name: "ESCUELA 4 TM y TT", numPhotos: 12 },
@@ -389,6 +404,10 @@
 
       // CONFIGURA AQUÍ: Los textos de cada escuela (opcional, si quieres personalizarlos)
       const schoolTexts = {
+        "CEI 7": {
+      custom: true, // Indica que esta escuela tiene diseño especial
+      title: "Nuestro proyecto"
+        },
         "JIN C ESCUELA 12": {
           intro:
             "El proyecto, coordinado por la docente Daniela Zuvanich, se centró en el trabajo con el respeto por la diversidad cultural, promoviendo el reconocimiento y la valoración de las distintas identidades que conviven en nuestra comunidad educativa. A partir de la visualización de un video sobre el significado de los colores de la bandera wiphala, se generaron espacios de diálogo y reflexión donde los niños compartieron ideas sobre las culturas originarias y sus símbolos.",
@@ -550,50 +569,94 @@
         // Si no agregas una escuela, usará el texto por defecto
       };
 
+      
       function createSchoolButtons() {
-        const container = document.getElementById("schoolButtons");
-        schoolsData.forEach((schoolData, index) => {
-          const button = document.createElement("button");
-          button.className = "btn btn-primary";
-          button.textContent = schoolData.name;
-          button.onclick = () => goToPage(index + 2);
-          container.appendChild(button);
-        });
-      }
+  const container = document.getElementById("schoolButtons");
+  container.innerHTML = ""; // limpiar por si se llama dos veces
+
+  // Creamos un array donde CEI 7 va primero, pero mantenemos schoolsData sin modificar
+  const ordered = [
+    schoolsData.find(s => s.name === "CEI 7"),
+    ...schoolsData.filter(s => s.name !== "CEI 7")
+  ].filter(Boolean); // filter por si no existe CEI 7
+
+  ordered.forEach((school) => {
+    const button = document.createElement("button");
+
+    // Texto especial para CEI 7
+    if (school.name === "CEI 7") {
+      button.className = "btn cei7-button";
+      button.textContent = "CEI 7";
+    } else {
+      button.className = "btn btn-primary";
+      button.textContent = school.name;
+    }
+
+    // Encontrar el índice original en schoolsData para saber a qué página ir
+    const originalIndex = schoolsData.findIndex(s => s.name === school.name);
+    const pageNumber = originalIndex >= 0 ? originalIndex + 2 : null;
+
+    // Si no existe la página (por algún motivo) no asignamos onclick
+    if (pageNumber) {
+      button.onclick = () => goToPage(pageNumber);
+    } else {
+      // fallback: si no encuentra índice, console.warn para debug
+      console.warn("No se encontró página para:", school.name);
+    }
+
+    container.appendChild(button);
+  });
+}
+
 
       function createSchoolPages() {
-        const container = document.querySelector(".container");
-        schoolsData.forEach((schoolData, index) => {
-          const pageNum = index + 2;
-          const schoolName = schoolData.name;
-          const numPhotos = schoolData.numPhotos;
+  const container = document.querySelector(".container");
 
-          const texts = schoolTexts[schoolName] || {
-            intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción sobre las actividades y objetivos que desarrollaron los alumnos durante la Semana de la Educación Especial.`,
-            final: `Texto final o conclusiones del proyecto ${schoolName}. Aquí se puede incluir el resultado final o un resumen de lo trabajado con los estudiantes.`,
-          };
+  // Ordenar para que CEI 7 aparezca primero
+  const orderedSchools = schoolsData.sort((a, b) => {
+    if (a.name === "CEI 7") return -1;
+    if (b.name === "CEI 7") return 1;
+    return 0;
+  });
+
+  orderedSchools.forEach((schoolData, index) => {
+    const pageNum = index + 2;
+    const schoolName = schoolData.name;
+    const numPhotos = schoolName === "CEI 7" ? 6 : schoolData.numPhotos;
+
+    // 🔹 Textos específicos solo para CEI 7
+    const texts = schoolName === "CEI 7" 
+      ? {
+          intro: "NUESTRO PROYECTO",
+          final: "se completa con el texo del final", // Podés completar si querés un texto final
+        }
+      : (schoolTexts[schoolName] || {
+          intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción...`,
+          final: `Texto final o conclusiones del proyecto ${schoolName}.`
+        });
 
           // AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
-         let photosHTML = "";
-for (let i = 1; i <= numPhotos; i++) {
-  const photoPath =
-    i === 1
-      ? `images/${schoolName.replace(/ /g, "_")}.jpg`
-      : `images/${schoolName.replace(/ /g, "_")}${i}.jpg`;
+          let photosHTML = "";
+          for (let i = 1; i <= numPhotos; i++) {
+            const photoPath =
+              i === 1
+                ? `images/${schoolName.replace(/ /g, "_")}.jpg`
+                : `images/${schoolName.replace(/ /g, "_")}${i}.jpg`;
 
-  // Generar el array de fotos correctamente
-  const photosArray = Array.from({length: numPhotos}, (_, j) => {
-    const path = j === 0 
-      ? `images/${schoolName.replace(/ /g, "_")}.jpg`
-      : `images/${schoolName.replace(/ /g, "_")}${j + 1}.jpg`;
-    return `'${path}'`;
-  }).join(',');
+            // Generar el array de fotos correctamente
+            const photosArray = Array.from({ length: numPhotos }, (_, j) => {
+              const path =
+                j === 0
+                  ? `images/${schoolName.replace(/ /g, "_")}.jpg`
+                  : `images/${schoolName.replace(/ /g, "_")}${j + 1}.jpg`;
+              return `'${path}'`;
+            }).join(",");
 
-  photosHTML += `<img src="${photoPath}" alt="Foto ${i} de ${schoolName}" 
+            photosHTML += `<img src="${photoPath}" alt="Foto ${i} de ${schoolName}" 
     class="project-photo" 
-    onclick="openModal('${photoPath}', [${photosArray}], ${i-1})"
+    onclick="openModal('${photoPath}', [${photosArray}], ${i - 1})"
     onerror="this.style.display='none'">`;
-};
+          }
 
           const pageHTML = `
                     <div class="page" id="page${pageNum}">
@@ -637,36 +700,35 @@ for (let i = 1; i <= numPhotos; i++) {
       }
 
       let currentPhotos = [];
-let currentIndex = 0;
+      let currentIndex = 0;
 
-function openModal(photoPath, photosArray = null, index = 0) {
-    document.getElementById('imageModal').classList.add('active');
-    document.getElementById('modalImage').src = photoPath;
+      function openModal(photoPath, photosArray = null, index = 0) {
+        document.getElementById("imageModal").classList.add("active");
+        document.getElementById("modalImage").src = photoPath;
 
-    if (photosArray) {
-        currentPhotos = photosArray;
-        currentIndex = index;
-    } else {
-        currentPhotos = [photoPath];
-        currentIndex = 0;
-    }
-}
+        if (photosArray) {
+          currentPhotos = photosArray;
+          currentIndex = index;
+        } else {
+          currentPhotos = [photoPath];
+          currentIndex = 0;
+        }
+      }
 
-function closeModal() {
-    document.getElementById('imageModal').classList.remove('active');
-}
+      function closeModal() {
+        document.getElementById("imageModal").classList.remove("active");
+      }
 
-// Función para cambiar imagen
-function changeModalImage(direction) {
-    if (!currentPhotos.length) return;
+      // Función para cambiar imagen
+      function changeModalImage(direction) {
+        if (!currentPhotos.length) return;
 
-    currentIndex += direction;
-    if (currentIndex < 0) currentIndex = currentPhotos.length - 1;
-    if (currentIndex >= currentPhotos.length) currentIndex = 0;
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = currentPhotos.length - 1;
+        if (currentIndex >= currentPhotos.length) currentIndex = 0;
 
-    document.getElementById('modalImage').src = currentPhotos[currentIndex];
-}
-
+        document.getElementById("modalImage").src = currentPhotos[currentIndex];
+      }
 
       // Cerrar modal al hacer clic fuera de la imagen
       document
