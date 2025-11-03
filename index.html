@@ -405,8 +405,9 @@
       // CONFIGURA AQUÍ: Los textos de cada escuela (opcional, si quieres personalizarlos)
       const schoolTexts = {
         "CEI 7": {
-      custom: true, // Indica que esta escuela tiene diseño especial
-      title: "Nuestro proyecto"
+          custom: true, // Indica que esta escuela tiene diseño especial
+          title:
+            "En el marco de la Semana de la Educación Especial, los docentes del CEI 7 participaron de los conversatorios y propuestas formativas a través de encuentros virtuales por Zoom. Estos espacios permitieron reflexionar de manera conjunta sobre las prácticas educativas inclusivas, compartir experiencias y abrir instancias de escucha y debate entre los equipos docentes. La Semana de la Educación Especial, celebrada del 14 al 17 de octubre, tiene como propósito visibilizar el lugar de la modalidad dentro del sistema educativo, fortalecer el trabajo en red y promover una mirada que reconozca la diversidad como un valor y no como una dificultad. Bajo el lema <strong>«La escuela: una Especial manera de construir lo Común»</strong>, se invita a pensar que lo común no es aquello que es igual para todos, sino lo que se construye colectivamente garantizando la participación de cada estudiante desde sus singularidades. Esta perspectiva se enmarca en los principios de la educación inclusiva, que promueve el derecho de todos los niños y niñas a aprender, participar y ser parte, eliminando barreras y generando apoyos adecuados. A lo largo de la semana, se desarrollaron actividades, talleres y encuentros en distintos espacios educativos, reuniendo supervisores, directivos, docentes y equipos interdisciplinarios. Desde el CEI 7, la participación en estas instancias fue una oportunidad para repensar nuestras prácticas, fortalecer el compromiso con la inclusión y reafirmar el rol de la escuela como espacio de construcción colectiva, afectiva y democrática.",
         },
         "JIN C ESCUELA 12": {
           intro:
@@ -476,9 +477,9 @@
         },
         "ESCUELA 24": {
           intro:
-            "En quinto grado, los alumnos trabajaron en un proyecto conjunto para crear una versión inclusiva de un cuento producido por ellos mismos. A partir de sus propias descripciones, utilizaron herramientas de inteligencia artificial para generar imágenes, incorporaron texto en Braille y añadieron efectos de sonido creados con IA que representaban las escenas y emociones del relato. Durante el proceso, los grupos investigaron cómo leen las personas con discapacidad visual y cómo los sonidos pueden transmitir sensaciones y atmósferas.",
+            "En quinto grado, bajo la coordinación del docente Cristian Cancela, los alumnos llevaron adelante un proyecto colaborativo en el que crearon una versión inclusiva de un cuento original escrito por ellos mismos. A partir de sus propias descripciones, utilizaron herramientas de inteligencia artificial para generar imágenes, incorporaron texto en sistema Braille y añadieron efectos de sonido producidos también con IA, que representaban las escenas y emociones del relato.Durante el proceso, los estudiantes investigaron de qué manera leen las personas con discapacidad visual y cómo los sonidos pueden transmitir emociones, sensaciones y atmósferas. Este proyecto, guiado por Cristian Cancela, buscó no solo desarrollar la creatividad, sino también promover la empatía, la inclusión y el uso responsable de la tecnología.",
           final:
-            "Como producto final, se presentó un cuento accesible en formato digital acompañado de un mural táctil, combinando imágenes generadas por IA, Braille artesanal y paisajes sonoros inclusivos mediante un código QR que permite escuchar los sonidos ambientales. Esta producción se expondrá en la muestra de fin de año de la escuela, destacando la creatividad, la inclusión y la accesibilidad.",
+            "Como producto final, se presentará un cuento accesible en formato digital acompañado de un mural táctil, combinando imágenes generadas por IA, Braille artesanal y paisajes sonoros inclusivos mediante un código QR que permite escuchar los sonidos ambientales. Esta producción se expondrá en la muestra de fin de año de la escuela, destacando la creatividad, la inclusión y la accesibilidad.",
         },
         "ESCUELA 25 TM": {
           docente: "Mariana Di Ranni",
@@ -569,71 +570,77 @@
         // Si no agregas una escuela, usará el texto por defecto
       };
 
-      
       function createSchoolButtons() {
-  const container = document.getElementById("schoolButtons");
-  container.innerHTML = ""; // limpiar por si se llama dos veces
+        const container = document.getElementById("schoolButtons");
+        container.innerHTML = ""; // limpiar por si se llama dos veces
 
-  // Creamos un array donde CEI 7 va primero, pero mantenemos schoolsData sin modificar
-  const ordered = [
-    schoolsData.find(s => s.name === "CEI 7"),
-    ...schoolsData.filter(s => s.name !== "CEI 7")
-  ].filter(Boolean); // filter por si no existe CEI 7
+        // Creamos un array donde CEI 7 va primero, pero mantenemos schoolsData sin modificar
+        const ordered = [
+          schoolsData.find((s) => s.name === "CEI 7"),
+          ...schoolsData.filter((s) => s.name !== "CEI 7"),
+        ].filter(Boolean); // filter por si no existe CEI 7
 
-  ordered.forEach((school) => {
-    const button = document.createElement("button");
+        ordered.forEach((school) => {
+          const button = document.createElement("button");
 
-    // Texto especial para CEI 7
-    if (school.name === "CEI 7") {
-      button.className = "btn cei7-button";
-      button.textContent = "CEI 7";
-    } else {
-      button.className = "btn btn-primary";
-      button.textContent = school.name;
-    }
+          // Texto especial para CEI 7
+          if (school.name === "CEI 7") {
+            button.className = "btn cei7-button";
+            button.textContent = "CEI 7";
+          } else {
+            button.className = "btn btn-primary";
+            button.textContent = school.name;
+          }
 
-    // Encontrar el índice original en schoolsData para saber a qué página ir
-    const originalIndex = schoolsData.findIndex(s => s.name === school.name);
-    const pageNumber = originalIndex >= 0 ? originalIndex + 2 : null;
+          // Encontrar el índice original en schoolsData para saber a qué página ir
+          const originalIndex = schoolsData.findIndex(
+            (s) => s.name === school.name
+          );
+          const pageNumber = originalIndex >= 0 ? originalIndex + 2 : null;
 
-    // Si no existe la página (por algún motivo) no asignamos onclick
-    if (pageNumber) {
-      button.onclick = () => goToPage(pageNumber);
-    } else {
-      // fallback: si no encuentra índice, console.warn para debug
-      console.warn("No se encontró página para:", school.name);
-    }
+          // Si no existe la página (por algún motivo) no asignamos onclick
+          if (pageNumber) {
+            button.onclick = () => goToPage(pageNumber);
+          } else {
+            // fallback: si no encuentra índice, console.warn para debug
+            console.warn("No se encontró página para:", school.name);
+          }
 
-    container.appendChild(button);
-  });
-}
-
+          container.appendChild(button);
+        });
+      }
 
       function createSchoolPages() {
-  const container = document.querySelector(".container");
+        const container = document.querySelector(".container");
 
-  // Ordenar para que CEI 7 aparezca primero
-  const orderedSchools = schoolsData.sort((a, b) => {
-    if (a.name === "CEI 7") return -1;
-    if (b.name === "CEI 7") return 1;
-    return 0;
-  });
-
-  orderedSchools.forEach((schoolData, index) => {
-    const pageNum = index + 2;
-    const schoolName = schoolData.name;
-    const numPhotos = schoolName === "CEI 7" ? 6 : schoolData.numPhotos;
-
-    // 🔹 Textos específicos solo para CEI 7
-    const texts = schoolName === "CEI 7" 
-      ? {
-          intro: "NUESTRO PROYECTO",
-          final: "se completa con el texo del final", // Podés completar si querés un texto final
-        }
-      : (schoolTexts[schoolName] || {
-          intro: `Descripción del proyecto de ${schoolName}. Aquí puede colocarse una breve introducción...`,
-          final: `Texto final o conclusiones del proyecto ${schoolName}.`
+        // Ordenar para que CEI 7 aparezca primero
+        const orderedSchools = schoolsData.sort((a, b) => {
+          if (a.name === "CEI 7") return -1;
+          if (b.name === "CEI 7") return 1;
+          return 0;
         });
+
+        orderedSchools.forEach((schoolData, index) => {
+          const pageNum = index + 2;
+          const schoolName = schoolData.name;
+          const numPhotos = schoolName === "CEI 7" ? 6 : schoolData.numPhotos;
+
+          // 🔹 Textos para cada escuela
+          const currentSchoolText = schoolTexts[schoolName] || {};
+
+          const texts = currentSchoolText.custom
+            ? {
+                intro: `<p>${currentSchoolText.title}</p>`,
+                final: "", // No mostrar “Producción Final” en CEI 7
+              }
+            : {
+                intro:
+                  currentSchoolText.intro ||
+                  `Descripción del proyecto de ${schoolName}.`,
+                final:
+                  currentSchoolText.final ||
+                  `Texto final o conclusiones del proyecto ${schoolName}.`,
+              };
 
           // AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
           let photosHTML = "";
@@ -664,20 +671,26 @@
                         <div class="decorative-blob blob2"></div>
                         <div class="content">
                             <h2>${schoolName}</h2>
+                          <div class="project-detail">
+   ${
+     schoolName === "CEI 7"
+       ? texts.intro
+       : `<h3>Introducción del Proyecto</h3><p>${texts.intro}</p>`
+   }
+</div>
+                      <div class="project-detail">
+    <h3>${schoolName === "CEI 7" ? "IMÁGENES DEL CONVERSATORIO EN LA SEMANA DE LA EDUCACIÓN ESPECIAL" : "Fotos del Proyecto"}</h3>
+    <div class="photos-grid">
+        ${photosHTML}
+    </div>
+</div>
                             <div class="project-detail">
-                                <h3>Introducción del Proyecto</h3>
-                                <p>${texts.intro}</p>
-                            </div>
-                            <div class="project-detail">
-                                <h3>Fotos del Proyecto</h3>
-                                <div class="photos-grid">
-                                    ${photosHTML}
-                                </div>
-                            </div>
-                            <div class="project-detail">
-                                <h3>Producción Final</h3>
-                                <p>${texts.final}</p>
-                            </div>
+   ${
+     schoolName === "CEI 7"
+       ? ""
+       : `<h3>Producción Final</h3><p>${texts.final}</p>`
+   }
+</div>
                         </div>
                         <div class="navigation">
                             <button class="btn btn-back" onclick="goToPage(1)">← Volver al inicio</button>
